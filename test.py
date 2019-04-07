@@ -1,8 +1,26 @@
-from satellite import Satellite
+from multiprocessing import Pool, Process
+from spacetrackservice import SatelliteTrackService
+from datetime import datetime
 
-tleLine1 = '1 25544U 98067A   13149.87225694  .00009369  00000-0  16828-3 0  9031'
-tleLine2 = '2 25544 051.6485 199.1576 0010128 012.7275 352.5669 15.50581403831869'
-sat = Satellite(id='sat2', size=10, line1=tleLine1, line2=tleLine2)
 
-position = sat.get_position({'year': 2019, 'month': 3, 'day': 2, 'hour': 23, 'minute': 59, 'second': 55})
-print(position)
+def prop(x):
+    return x['x'].get_position(x['y'])
+
+def main(o):
+    pool = Pool(8)
+    results = pool.map(prop, o)
+    pool.close()
+    pool.join()
+    return results
+
+def f(sat):
+    return sat['sat'].get_position(sat['time'])
+
+if __name__ == '__main__':
+    sats = SatelliteTrackService.get_satellite_data()
+    now = datetime.now()
+    r = list(map(lambda x: x.get_semi_major_axis(), sats))
+    print(r)
+    min = min(r)
+    max = max(r)
+    print('{}:{}'.format(min,max))
