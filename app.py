@@ -5,11 +5,9 @@ from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 import logging
 import math
-import os
 import json
-import time
 
-from lineofsight import los, ground_los
+from lineofsightlibrary import do_routing
 from spacetrackservice import SatelliteTrackService
 from station import Station
 from timekeeper import TimeKeeper
@@ -100,18 +98,15 @@ def satellite():
         pass
     res = {'satellites': [], 'lines': [], 'stations': []}
     return Response(json.dumps(res), mimetype='application/json')
-
+i = 0
 @socket.on('sim')
 def sim():
+
     lines.clear()
     clock_time = time_keeper.get_time()
-    origin = uccs
-    origin_pos = origin.get_ecef_position()
-    los_sats = list(map(lambda x: x.id, filter(lambda y: ground_los(origin_pos, y.get_propagation(clock_time)[0]), sats)))
-    for i in range(len(los_sats)):
-        lines.append({'id': '{}|{}'.format(origin.id, los_sats[i])})
-    print(len(lines))
-    # print(clock_time)
+    route = do_routing(uccs, johann, sats, clock_time)
+    socket.emit('sim', {'text': 'Total distance traveled={}'.format(sum)}, broadcast=True)
+
     # socket.emit('sim', {'text': 'Calculating optimum path...'}, broadcast=True)
     # closest_sat_to_host, host_dist = get_closest_satellite(sats, uccs, clock_time)
     # lines.append({'id': '{}|{}'.format(closest_sat_to_host.id, uccs.id)})

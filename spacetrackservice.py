@@ -22,6 +22,6 @@ class SatelliteTrackService:
             satellite = Satellite(id=splits[i].replace(' ', '').replace('\n', ''), line1=splits[i+1].replace('\n', ''), line2=splits[i+2].replace('\n', ''), size=size)
             satellites.append(satellite)
         satellites.sort(key=lambda x: x.get_semi_major_axis())
-        satellites = satellites[:500 if len(satellites) >= 500 else len(satellites)]
+        satellites = satellites[:1250 if len(satellites) >= 1250 else len(satellites)]
         print('Retrieved [{}] satellites from Celestrak'.format(len(satellites)))
         return satellites
