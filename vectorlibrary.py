@@ -14,17 +14,9 @@ def angle_between(v1_hat, v2_hat):
     return np.arccos(np.clip(np.dot(v1_hat, v2_hat), -1.0, 1.0)) * 180 / math.pi
 
 def get_angle_remaining(station1, station2, satellite_position):
-    x1, y1, z1 = station1
-    x2, y2, z2 = station2
-    x3, y3, z3 = satellite_position
-
-    p1 = np.array([x1, y1, z1])
-    p2 = np.array([x2, y2, z2])
-    p3 = np.array([x3 * 1000, y3 * 1000, z3 * 1000])
-
-    v_c_p1 = p1 - center
-    v_c_p2 = p2 - center
-    v_c_p3 = p3 - center
+    v_c_p1 = station1 - center
+    v_c_p2 = station2 - center
+    v_c_p3 = satellite_position - center
 
     v_c_p1_hat = normalize_vector(v_c_p1)
     v_c_p2_hat = normalize_vector(v_c_p2)

@@ -101,11 +101,16 @@ def satellite():
 i = 0
 @socket.on('sim')
 def sim():
-
+    global lines
     lines.clear()
     clock_time = time_keeper.get_time()
-    route = do_routing(uccs, johann, sats, clock_time)
-    socket.emit('sim', {'text': 'Total distance traveled={}'.format(sum)}, broadcast=True)
+    print('------Starting routing--------')
+    start = datetime.now()
+    route, dist = do_routing(uccs, johann, sats, clock_time)
+    stop = datetime.now()
+    print('------Completed routing in {}s--------'.format((stop - start).total_seconds()))
+    lines = route
+    socket.emit('sim', {'text': 'Total distance traveled={}'.format(dist)}, broadcast=True)
 
     # socket.emit('sim', {'text': 'Calculating optimum path...'}, broadcast=True)
     # closest_sat_to_host, host_dist = get_closest_satellite(sats, uccs, clock_time)

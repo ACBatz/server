@@ -1,7 +1,5 @@
-from sgp4.earth_gravity import wgs84
-from sgp4.io import twoline2rv
 import pyproj
-import math
+import numpy as np
 
 class Station:
     def __init__(self, id, lat, long, alt, size=15):
@@ -14,7 +12,8 @@ class Station:
         self.lla = pyproj.Proj(proj='latlong', ellps='WGS84', datum='WGS84')
 
     def get_ecef_position(self):
-       return pyproj.transform(self.lla, self.ecef, self.long, self.lat, self.alt, radians=False)
+        x, y, z = pyproj.transform(self.lla, self.ecef, self.long, self.lat, self.alt, radians=False)
+        return np.array([x, y, z])
 
     def get_position(self):
         return {'latitude': self.lat, 'longitude': self.long, 'height': self.alt, 'size': self.size, 'id': self.id}

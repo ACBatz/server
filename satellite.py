@@ -2,6 +2,7 @@ from sgp4.earth_gravity import wgs84
 from sgp4.io import twoline2rv
 import pyproj
 import math
+import numpy as np
 
 class Satellite:
     def __init__(self, id, line1, line2, size=10):
@@ -16,11 +17,12 @@ class Satellite:
     def get_propagation(self, time):
         position, velocity = self.satellite.propagate(time.year, time.month, time.day, time.hour, time.minute,
                                                       time.second)
-        return position, velocity
+        x, y, z = position
+        return np.array([x * 1000, y * 1000, z * 1000])
 
     def get_position(self, time):
-        position, velocity = self.get_propagation(time)
-        longitude, latitude, radius = pyproj.transform(self.ecef, self.lla, position[0] * 1000, position[1] * 1000, position[2] * 1000, radians=False)
+        position = self.get_propagation(time)
+        longitude, latitude, radius = pyproj.transform(self.ecef, self.lla, position[0], position[1], position[2], radians=False)
         if math.isnan(longitude) or math.isnan(latitude) or math.isnan(radius):
             return None
         return {'latitude': latitude, 'longitude': longitude, 'height': radius, 'size': self.size, 'id': self.id}
