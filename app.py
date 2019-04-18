@@ -138,4 +138,4 @@ def on_connect():
     print('user connected')
 
 if __name__ == '__main__':
-    socket.run(app)
+    socket.run(app, host='10.0.0.126', port=5000)
