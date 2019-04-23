@@ -98,38 +98,23 @@ def satellite():
         pass
     res = {'satellites': [], 'lines': [], 'stations': []}
     return Response(json.dumps(res), mimetype='application/json')
-i = 0
+
 @socket.on('sim')
 def sim():
     global lines
-    lines.clear()
-    clock_time = time_keeper.get_time()
-    print('------Starting routing--------')
-    start = datetime.now()
-    route, dist = do_routing(uccs, johann, sats, clock_time)
-    stop = datetime.now()
-    print('------Completed routing in {}s--------'.format((stop - start).total_seconds()))
-    lines = route
-    socket.emit('sim', {'text': 'Total distance traveled={}'.format(dist)}, broadcast=True)
-
-    # socket.emit('sim', {'text': 'Calculating optimum path...'}, broadcast=True)
-    # closest_sat_to_host, host_dist = get_closest_satellite(sats, uccs, clock_time)
-    # lines.append({'id': '{}|{}'.format(closest_sat_to_host.id, uccs.id)})
-    # closest_sat_to_dest, dest_dist = get_closest_satellite(sats, johann, clock_time)
-    # lines.append({'id': '{}|{}'.format(closest_sat_to_dest.id, johann.id)})
-    # lines.append({'id': '{}|{}'.format(closest_sat_to_host.id, closest_sat_to_dest.id)})
-    # sat_to_sat_dist = distance(closest_sat_to_host.get_propagation(clock_time)[0], closest_sat_to_dest.get_propagation(clock_time)[0])
-    # socket.emit('sim', {'text': 'Optimum path found:'}, broadcast=True)
-    # socket.emit('sim', {'text': 'UCCS to {} - Distance={}'.format(closest_sat_to_host.id, host_dist / 1000)}, broadcast=True)
-    # socket.emit('sim', {'text': '{} to {} - Distance={}'.format(closest_sat_to_host.id, closest_sat_to_dest.id, sat_to_sat_dist / 1000)}, broadcast=True)
-    # socket.emit('sim', {'text': '{} to Johannesburg, SA - Distance={}'.format(closest_sat_to_dest, dest_dist / 1000)}, broadcast=True)
-    # socket.emit('sim', {'text': 'Total Trip Distance= {}'.format((host_dist + sat_to_sat_dist + dest_dist) / 1000)}, broadcast=True)
-    # time.sleep(1)
-    # socket.emit('sim', {'text': 'Initiating ping between UCCS and Johannesburg, South Africa'}, broadcast=True)
-    # time.sleep(1)
-    # socket.emit('sim', {'text': 'Pinging 41.134.5.66 with 32 bytes of data:'}, broadcast=True)
-    # l1 = transmit_data(uccs, closest_sat_to_host, 32, 250)
-    # socket.emit('sim', {'text': 'Pinging 41.134.5.66 with 32 bytes of data:'}, broadcast=True)
+    if len(lines) > 0:
+        lines.clear()
+    else:
+        clock_time = time_keeper.get_time()
+        # socket.emit('sim', {'text': '--- Starting routing ---'}, broadcast=True)
+        start = datetime.now()
+        route, dist = do_routing(uccs, johann, sats, clock_time).get_shortest_path()
+        stop = datetime.now()
+        # socket.emit('sim', {'text': '--- Completed routing in {}s ---'.format((stop - start).total_seconds())}, broadcast=True)
+        lines = route
+        socket.emit('sim', {'text': 'Total distance traveled={}'.format(dist)}, broadcast=True)
+        # for rt in route:
+        #     socket.emit('sim', {'text': rt}, broadcast=True)
 
 
 
