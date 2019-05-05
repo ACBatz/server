@@ -89,6 +89,7 @@ def get_best(origin, destination, object, satellites, time):
     for sat in sats:
         sat_position = sat.get_propagation(time)
         distance = distance_between_points(sat_position, dest_position)
+        theta = get_angle_remaining(origin.get_ecef_position(), dest_position, sat_position)
         if station_has_line_of_sight(dest_position, sat_position):
             if not instant_winner:
                 instant_winner = sat

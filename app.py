@@ -68,8 +68,8 @@ def transmit_data(p1, p2, packet_size_bytes, upload_speed_mbps):
     return latency + comp_latency
 
 
-uccs = Station('uccs', 38.893601, -104.800619, 0, size=20)
-johann = Station('johann', -26.2041, 28.0473, 0, size=20)
+uccs = Station('uccs', 38.893601, -104.800619, 0, size=10)
+johann = Station('johann', -26.2041, 28.0473, 0, size=10)
 
 sats = []
 lines = []
@@ -94,8 +94,8 @@ def satellite():
         print('Completed propagation in [{}] seconds and returned [{}] based on filter'.format((stop - start).total_seconds(), len(sats_)))
         res = {'satellites': sats_, 'lines': lines, 'stations': stats_}
         return Response(json.dumps(res), mimetype='application/json')
-    except:
-        pass
+    except Exception as e:
+        print(e)
     res = {'satellites': [], 'lines': [], 'stations': []}
     return Response(json.dumps(res), mimetype='application/json')
 
@@ -123,4 +123,4 @@ def on_connect():
     print('user connected')
 
 if __name__ == '__main__':
-    socket.run(app, host='10.0.0.126', port=5000)
+    socket.run(app)
